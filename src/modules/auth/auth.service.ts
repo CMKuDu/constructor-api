@@ -86,9 +86,9 @@ export class AuthService implements IAutheService {
         if (dto.password && !this.isValidPassword(dto.password)) {
             errors.push('Mật khẩu phải có ít nhất 6 ký tự');
         }
-        if (dto.password !== dto.rePassword) {
-            errors.push('Mật khẩu nhập lại không khớp');
-        }
+        // if (dto.password !== dto.rePassword) {
+        //     errors.push('Mật khẩu nhập lại không khớp');
+        // }
 
         if (errors.length > 0) {
             throw new ApiErrorException(errors.join(', '), HttpStatus.BAD_REQUEST);

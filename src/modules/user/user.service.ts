@@ -44,6 +44,9 @@ export class UserService implements IUserService {
             where: { email: dto.email },
             relations: { role: true }
         })
+        if (!result) {
+            throw new ApiErrorException('Not Found')
+        }
         return result
     }
     async createUser(dto: ReqUser.createUser): Promise<ResUserDTO | null> {
@@ -54,7 +57,9 @@ export class UserService implements IUserService {
                 HttpStatus.CONFLICT
             )
         }
-        const saved = await this.userRepository.save(dto);
+        const newUser = this.userRepository.create(dto);
+        const saved = await this.userRepository.save(newUser);
+
         if (!saved) {
             throw new ApiErrorException(
                 'User BAD_REQUEST',
@@ -77,6 +82,9 @@ export class UserService implements IUserService {
                 'User NotFound',
                 HttpStatus.NOT_FOUND
             )
+        }
+        if (roleId) {
+            user.roleId = roleId;
         }
         const updated = await this.userRepository.save(
             this.userRepository.merge(user, data)
