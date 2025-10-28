@@ -11,15 +11,16 @@ import { User } from './Enities/user.entity';
 import { Role } from './Enities/role.entity';
 import { Inventories } from './Enities/inventory.entity';
 import { Material } from './Enities/material.entity';
-import { UserModule } from './Modules/user/user.module';
-import { AuthModule } from './Modules/auth/auth.module';
-import { TokenModule } from './Modules/token/token.module';
-import { RoleModule } from './Modules/role/role.module';
-import { MaterialModule } from './Modules/material/material.module';
-import { BidModule } from './Modules/bid/bid.module';
-import { BidItemModule } from './Modules/bid-item/bid-item.module';
+
 // import { Medical } from './Enities/Medical.entity';
 import { RenderModule } from './render/render.module';
+import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { RoleModule } from './modules/role/role.module';
+import { MaterialModule } from './modules/material/material.module';
+import { BidModule } from './modules/bid/bid.module';
+import { BidItemModule } from './modules/bid-item/bid-item.module';
+import { TokenModule } from 'src/modules/token/token.module';
 
 @Module({
   imports: [

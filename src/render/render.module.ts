@@ -7,5 +7,6 @@ import { HttpModule } from '@nestjs/axios';
   providers: [RenderService],
   controllers: [RenderController],
   imports: [HttpModule],
+  exports: [RenderService]
 })
 export class RenderModule { }
