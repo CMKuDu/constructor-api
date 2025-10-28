@@ -19,6 +19,7 @@ import { MaterialModule } from './Modules/material/material.module';
 import { BidModule } from './Modules/bid/bid.module';
 import { BidItemModule } from './Modules/bid-item/bid-item.module';
 // import { Medical } from './Enities/Medical.entity';
+import { RenderModule } from './render/render.module';
 
 @Module({
   imports: [
@@ -69,7 +70,8 @@ import { BidItemModule } from './Modules/bid-item/bid-item.module';
     RoleModule,
     MaterialModule,
     BidModule,
-    BidItemModule
+    BidItemModule,
+    RenderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
