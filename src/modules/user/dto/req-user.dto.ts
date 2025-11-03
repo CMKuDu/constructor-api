@@ -1,5 +1,5 @@
-import { User } from "src/Enities/user.entity";
-import { DeepPartial } from "typeorm";
+import { Expose } from "class-transformer"
+
 
 export namespace ReqUser {
     export class createUser {
@@ -8,6 +8,8 @@ export namespace ReqUser {
         password: string
         firstName: string
         lastName: string
+        @Expose()
+        roleId: number
     }
     export class findById {
         id: number
@@ -17,7 +19,7 @@ export namespace ReqUser {
     }
     export class updateUser {
         id: number
-        
+
     }
     export class deleteUser {
         id: number

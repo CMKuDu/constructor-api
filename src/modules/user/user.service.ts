@@ -39,6 +39,13 @@ export class UserService implements IUserService {
         }
         return result
     }
+    async findUserByEmail(email: string): Promise<User | null> {
+        const user = await this.userRepository.findOne({
+            where: { email },
+            relations: { role: true }
+        });
+        return user || null; // không ném lỗi
+    }
     async getUserByEmail(dto: ReqUser.findByEmail): Promise<ResUserDTO | null> {
         const result = await this.userRepository.findOne({
             where: { email: dto.email },
@@ -57,6 +64,9 @@ export class UserService implements IUserService {
                 HttpStatus.CONFLICT
             )
         }
+        if (!dto.roleId) {
+        dto.roleId = 1; // default roleId
+    }
         const newUser = this.userRepository.create(dto);
         const saved = await this.userRepository.save(newUser);
 

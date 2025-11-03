@@ -20,23 +20,48 @@ export class AuthService implements IAutheService {
         private readonly configService: ConfigService
     ) { }
     async registerAccount(dto: ReqAuth.ResignDTO): Promise<{ message: string; userId: number; userName: string; }> {
-         this.validateResignInput(dto)
-        const find = await this.isEmailAvailable(dto.email)
-        if (find) {
-            throw new ApiErrorException('User already exits', HttpStatus.CONFLICT)
-        }
-        const pwdHash = await this.hashPwd(dto.password)
-        const newUser = this.mapDtoToUser(dto, pwdHash)
-        const saveUser = await this.userService.createUser(newUser)
-        if (!saveUser) {
-            throw new ApiErrorException('Failed to create user', HttpStatus.BAD_REQUEST);
-        }
-        return {
-            message: 'Resign Susseccfully',
-            userId: saveUser.id,
-            userName: saveUser.userName
+        try {
+            // Validate input
+            this.validateResignInput(dto);
+
+            // Kiểm tra email đã tồn tại chưa
+            const find = await this.isEmailAvailable(dto.email);
+            if (find) {
+                throw new ApiErrorException('User already exists', HttpStatus.CONFLICT);
+            }
+
+            // Hash password
+            const pwdHash = await this.hashPwd(dto.password);
+
+            // Map DTO sang entity User
+            const newUser = this.mapDtoToUser(dto, pwdHash);
+
+            // Tạo user
+            const saveUser = await this.userService.createUser(newUser);
+            if (!saveUser) {
+                throw new ApiErrorException('Failed to create user', HttpStatus.BAD_REQUEST);
+            }
+
+            // Trả kết quả
+            return {
+                message: 'Resign Successfully',
+                userId: saveUser.id,
+                userName: saveUser.userName
+            };
+
+        } catch (error) {
+            // Nếu là ApiErrorException thì ném lại
+            if (error instanceof ApiErrorException) {
+                throw error;
+            }
+            // Log lỗi để debug
+            console.error('RegisterAccount error:', error);
+
+            // Ném lỗi chung cho các lỗi không mong muốn
+            throw new ApiErrorException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     async loginAccount(dto: ReqAuth.LoginDTO): Promise<{ token: { accessToken: string; refreshToken: string; }; info: { user: User; userName: string; email: string; }; }> {
         this.validateLoginInput(dto)
         const user = await this.userService.getUserByEmail({ email: dto.email })
@@ -114,10 +139,19 @@ export class AuthService implements IAutheService {
         }
     }
     private async isEmailAvailable(email: string): Promise<boolean> {
-        const find = await this.userService.getUserByEmail({ email });
-        if (find) return true;
-        return false;
+        try {
+            const find = await this.userService.findUserByEmail(email);
+            return !!find; // true nếu tồn tại, false nếu không
+        } catch (error) {
+            // Nếu lỗi là NotFound thì email chưa tồn tại → trả về false
+            if (error instanceof ApiErrorException && error.getStatus() === HttpStatus.NOT_FOUND) {
+                return false;
+            }
+            // Nếu lỗi khác thì ném tiếp
+            throw error;
+        }
     }
+
     private isValidEmail(email: string): boolean {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
@@ -131,6 +165,7 @@ export class AuthService implements IAutheService {
         return {
             ...rest,
             password: hashedPassword,
+            roleId: 1,
         };
     }
     private async hashPwd(pwd: string): Promise<string> {

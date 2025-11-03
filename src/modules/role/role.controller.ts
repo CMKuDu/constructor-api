@@ -15,7 +15,7 @@ export class RoleController {
         const res = await this.roleService.getAllRole(query);
         return new ApiResponse(HttpStatus.OK, 'Successfully', res)
     }
-    @Get('getById-role')
+    @Get('getById-role/:id')
     async getByOd(@Param('id', ParseIntPipe) id: number) {
         const res = await this.roleService.getByIdRole({ id: id })
         return new ApiResponse(HttpStatus.OK, 'Successfully', res)
